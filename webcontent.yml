@@ -1,0 +1,42 @@
+---
+- name: create a webcontent directory
+  hosts: dev
+  become: True
+
+  tasks:
+    - name: Ensure group "webdev" exists
+      ansible.builtin.group:
+        name: webdev
+        state: present
+
+    - name: Create directory
+      ansible.builtin.file:
+        path: /devweb
+        group: webdev
+        state: directory
+        mode: '2775'
+    
+    - name: Allow apache to modify files in /devweb
+      community.general.sefcontext:
+        target: '/devweb(/.*)?'
+        setype: httpd_sys_content_t
+        state: present
+    
+    - name: Apply new SELinux file context to filesystem
+      ansible.builtin.command: restorecon -Rv /devweb
+
+    - name: Copy using inline content
+      ansible.builtin.copy:
+        content: 'Development'
+        dest: /devweb/index.html
+        group: webdev
+        mode: '0644'
+
+    - name: Create a symbolic link
+      ansible.builtin.file:
+        src: /devweb
+        dest: /var/www/html/devweb
+        state: link
+    
+  
+
