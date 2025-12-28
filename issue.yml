@@ -1,0 +1,25 @@
+---
+- name: modify file content
+  hosts: all
+  become: True
+
+  tasks:
+    - name: Copy using inline content in dev
+      ansible.builtin.copy:
+        content: 'Development'
+        dest: /etc/issue
+      when: inventory_host in groups['dev']
+
+    - name: Copy using inline content in test
+      ansible.builtin.copy:
+        content: 'Test'
+        dest: /etc/issue
+      when: inventory_host in groups['test']
+
+    - name: Copy using inline content in prod
+      ansible.builtin.copy:
+        content: 'Productions'
+        dest: /etc/issue
+      when: inventory_host in groups['prod']
+
+
