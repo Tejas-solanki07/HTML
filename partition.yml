@@ -1,0 +1,88 @@
+---
+- name: create a partition
+  hosts: all
+  become: True
+  gather_facts: True
+
+  tasks:
+    - name: Print the msg
+      ansible.builtin.debug:
+        msg: " device is not present "
+      when: "'vda' not in ansible_diveces "
+
+    - name: Create a new primary partition with a size of 1500MiB
+      community.general.parted:
+        device: /dev/vda
+        number: 1
+        state: present
+        part_end: 1500MiB
+      when:
+        - "'vda' in ansible_devices "
+        - ansible_devices['vda'].size | regex_replace('GB','') | float >= 1.5
+
+    - name: Create a new primary partition with a size of 800MiB            
+      community.general.parted:                                              
+        device: /dev/vda                                                     
+        number: 1                                                            
+        state: present                                                       
+        part_end: 800MiB                                                    
+      when:                                                                  
+        - "'vda' in ansible_devices "                                        
+        - ansible_devices['vda'].size | regex_replace('GB','') | float < 1.5
+
+        
+    - name: Create a new primary partition with a size of 1500MiB           
+      community.general.parted:                                             
+        device: /dev/vdb                                                    
+        number: 1                                                           
+        state: present                                                      
+        part_end: 1500MiB                                                   
+      when:                                                                 
+        - "'vdb' in ansible_devices "                                       
+        - ansible_devices['vdb'].size | regex_replace('GB','') | float >= 1.5
+     
+    - name: Create a new primary partition with a size of 800MiB            
+      community.general.parted:                                              
+        device: /dev/vdb                                               
+        number: 1                                                            
+        state: present                                                       
+        part_end: 800MiB                                                    
+      when:                                                                  
+        - "'vdb' in ansible_devices "                                        
+        - ansible_devices['vdb'].size | regex_replace('GB','') | float < 1.5
+
+
+    - name: Create a ext4 filesystem on /dev/vda1
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/vda1
+
+    - name: Create a ext4 filesystem on /dev/vdb1
+      community.general.filesystem:               
+        fstype: ext4                              
+        dev: /dev/vdb1   
+
+    - name: Create directory
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: present
+      loop:
+        - /newpart
+        - /newpart2
+
+    - name: Mount Drive
+      ansible.posix.mount:
+        path: /newpart
+        src: /dev/vda1
+        fstype: ext4
+        state: mounted
+
+    - name: Mount Drive
+      ansible.posix.mount:
+        path: /newpart2
+        src: /dev/vdb1
+        fstype: ext4   
+        state: mounted
+    
+
+...    
