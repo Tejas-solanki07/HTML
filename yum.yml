@@ -1,0 +1,28 @@
+---
+- name: repo configure
+  hosts: all
+  become: True
+
+  tasks:
+    - name: Baseos
+      ansible.builtin.yum_repository:
+        name: BaseOS
+        description: "EX294 Base Software"
+        file: EX294_BASE
+        baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+        enabled: yes
+        gpgcheck: yes
+        gpgkey:
+
+    - name: Appstream
+      ansible.builtin.yum_repository:     
+        name: AppStream
+        description: "EX294 Base Software"
+        file: EX294_STREAM
+        baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+        enabled: yes 
+        gpgcheck: yes
+        gpgkey:
+
+...        
+                 
