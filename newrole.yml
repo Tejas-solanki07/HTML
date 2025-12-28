@@ -1,0 +1,10 @@
+---
+- name: use role apache
+  hosts: webservers
+  become: True
+
+  roles:   
+    - apache
+
+
+...    
