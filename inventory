@@ -1,0 +1,16 @@
+[dev]
+worker    ansible_user=root
+
+[test]
+worker
+
+[prod]
+worker
+worker
+
+[balancers]
+worker
+
+[webserver:children]
+prod
+
