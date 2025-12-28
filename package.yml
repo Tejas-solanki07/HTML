@@ -1,0 +1,36 @@
+---
+- name: install packages
+  hosts: dev,test,prod
+  become: True
+
+  tasks:
+    - name: Install packages
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - php
+        - mariadb
+
+- name: check rmp package
+  hosts: dev
+  become: True
+  
+  tasks:
+    - name: Install the 'RPM Development tools' package group
+      ansible.builtin.dnf:
+        name: '@RPM Development tools'
+        state: present
+
+
+- name: upgrade packages
+  hosts: dev
+  become: True
+
+  tasks:
+    - name: Upgrade all packages..
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+
+
