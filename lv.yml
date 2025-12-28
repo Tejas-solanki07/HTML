@@ -1,0 +1,37 @@
+---
+- name: create lvm
+  hosts: all
+  become: True
+  gather_facts: True
+
+  tasks:
+    - name: Print the msg
+      ansible.builtin.debug:
+        msg: " volume group does not exists "
+      when: ansible_lvm.vgs.myvg is not defined
+
+    - name: Create a logical volume of 1500m
+      community.general.lvol:
+        vg: myvg
+        lv: mylv
+        size: 1500m   
+      when: ansible_lvm.vgs.myvg.free_g >= "1.6"
+
+    - name: Print the error msg                       
+      ansible.builtin.debug:                    
+        msg: " Could not create volume of that size "   
+      when: ansible_lvm.vgs.myvg.free_g < "1.6"
+     
+    - name: Create a logical volume of 800m    
+      community.general.lvol:                   
+        vg: myvg                                
+        lv: mylv                                
+        size: 800m                             
+      when: ansible_lvm.vgs.myvg.free_g < "1.6"
+
+    - name: Create a ext4 filesystem
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/myvg/mylv
+
+...
