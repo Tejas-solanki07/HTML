@@ -1,0 +1,14 @@
+---
+- name: Generate hwreport
+  hosts: all
+  become: True
+  gather_facts: True
+
+  tasks:
+    - name: Template a file
+      ansible.builtin.template:
+        src: ./hwreport.txt
+        dest: /root/hwreport.txt
+
+
+...
