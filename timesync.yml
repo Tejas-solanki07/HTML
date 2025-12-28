@@ -1,0 +1,15 @@
+---
+- name: create role of timesync
+  hosts: all
+  become: True
+  vars:
+    timesync_ntp_servers:
+      - hostname: 192.168.152.122
+        iburst: yes
+
+  roles: 
+    - timesync
+ 
+
+...
+[love@linux1 ansible]$ 
