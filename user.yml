@@ -1,0 +1,53 @@
+---
+- name: creation of user in dev,test
+  hosts: dev,test
+  become: True
+  vars_files:
+    - locker.yml
+    - user_list.yml
+  
+
+  tasks:
+    - name: Ensure group "opsmgr" exists
+      ansible.builtin.group:
+        name: opsmgr
+        state: present
+
+    - name: Add the user
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.id }}"
+        group: opsmgr
+        state: present
+        password: "{{ mgr_pass | password_hash('sha512') }}"
+      when: item.job == "manager"
+      loop: "{{ user }}"
+
+
+- name: user create in prod
+  hosts: prod
+  become: True
+  vars_files:
+    - locker.yml
+    - user_list.yml
+
+
+  tasks:
+    - name: Ensure group "devops" exists
+      ansible.builtin.group:
+        name: devops
+        state: present
+
+    - name: Add the users
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.id }}"
+        group: devops
+        state: present
+        password: "{{ dev_pass | password_hash('sha512') }}"
+      when: item.job == "developer"
+      loop: "{{ user }}"
+
+    
+...
+[love@linux1 ansible]$ 
