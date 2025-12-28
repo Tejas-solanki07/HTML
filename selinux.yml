@@ -1,0 +1,13 @@
+---
+- name: selinux role
+  hosts: all
+  become: True
+  vars:
+    selinux_policy: targeted
+    selinux_state: enforcing
+
+  roles:
+    - selinux
+
+
+...
